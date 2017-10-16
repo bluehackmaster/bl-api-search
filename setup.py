@@ -31,6 +31,7 @@ setup(
     include_package_data = True, # include files listed in MANIFEST.in
     install_requires=[
         'flask', 'MarkupSafe', 'decorator', 'itsdangerous', 'six', 'brotlipy',
-        'raven[flask]', 'flask_limiter', 'Flask-Common'
+        'raven[flask]', 'flask_limiter', 'Flask-Common',
+        'pymongo'
     ],
 )

@@ -25,13 +25,15 @@ from werkzeug.wrappers import BaseResponse
 from werkzeug.http import parse_authorization_header
 from werkzeug import secure_filename
 from raven.contrib.flask import Sentry
+from pprint import pprint
 
 from . import filters
 from .helpers import get_headers, status_code, get_dict, get_request_range, check_basic_auth, check_digest_auth, \
     secure_cookie, H, ROBOT_TXT, ANGRY_ASCII, parse_multi_value_header, next_stale_after_value, \
     digest_challenge_response
-from .utils import weighted_choice
+from .utils import weighted_choice, JSONEncoder
 from .structures import CaseInsensitiveDict
+from .db import query_by_id
 
 ENV_COOKIES = (
     '_gauges_unique',
@@ -125,6 +127,12 @@ def search_image():
           filename = secure_filename(file.filename)
           file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
           return jsonify({'bok': 'ok'})
+
+@app.route('/<image_id>', methods=['GET'])
+def query_id(image_id):
+  result = query_by_id(image_id)
+  return JSONEncoder().encode(result)
+
 
 @app.route('/html')
 def view_html_page():
