@@ -17,11 +17,13 @@ import argparse
 
 from flask import Flask, Response, request, render_template, redirect, jsonify as flask_jsonify, make_response, url_for
 from flask_common import Common
+from flask import send_from_directory
 from six.moves import range as xrange
 from werkzeug.datastructures import WWWAuthenticate, MultiDict
 from werkzeug.http import http_date
 from werkzeug.wrappers import BaseResponse
 from werkzeug.http import parse_authorization_header
+from werkzeug import secure_filename
 from raven.contrib.flask import Sentry
 
 from . import filters
@@ -81,6 +83,14 @@ if os.environ.get("BUGSNAG_API_KEY") is not None:
     except:
         app.logger.warning("Unable to initialize Bugsnag exception handling.")
 
+
+
+UPLOAD_FOLDER = 'uploads'
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
+
+app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
 # -----------
 # Middlewares
 # -----------
@@ -98,17 +108,23 @@ def set_cors_headers(response):
             response.headers['Access-Control-Allow-Headers'] = request.headers['Access-Control-Request-Headers']
     return response
 
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+
 
 # ------
 # Routes
 # ------
 
-@app.route('/')
-def view_landing_page():
-    """Generates Landing Page."""
-    tracking_enabled = 'HTTPBIN_TRACKING' in os.environ
-    return render_template('index.html', tracking_enabled=tracking_enabled)
-
+@app.route('/', methods=['POST'])
+def search_image():
+  if request.method == 'POST':
+      file = request.files['file']
+      if file and allowed_file(file.filename):
+          filename = secure_filename(file.filename)
+          file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+          return jsonify({'bok': 'ok'})
 
 @app.route('/html')
 def view_html_page():
