@@ -1,8 +1,8 @@
 {
-  "name": "httpbin",
-  "description": "HTTP Request & Response Service, written in Python + Flask.",
-  "repository": "https://github.com/Runscope/httpbin",
-  "website": "https://httpbin.org",
+  "name": "bl_api_search",
+  "description": "BlueLens Image Search Request and Response Service",
+  "repository": "https://github.com/BlueLens/bl-api-search",
+  "website": "https://stylelens.io",
   "logo": "https://s3.amazonaws.com/f.cl.ly/items/333Y191Z2C0G2J3m3Y0b/httpbin.svg",
   "keywords": ["http", "rest", "API", "testing", "integration", "python", "flask"],
   "addons": "sentry"
