@@ -4,4 +4,4 @@
 # $ ./swagger/release.sh
 
 TOP=`pwd`
-s3cmd sync --exclude=".git/*" --exclude="node_modules/*" --recursive --default-mime-type="text/html" --guess-mime-type swagger/api.yaml s3://bluelens-api-objdetect-doc/ -c ~/.s3cfg
+s3cmd sync --exclude=".git/*" --exclude="node_modules/*" --recursive --default-mime-type="text/html" --guess-mime-type swagger/api.yaml s3://bluelens-api-search-doc/ -c ~/.s3cfg
