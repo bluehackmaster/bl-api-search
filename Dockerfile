@@ -1,8 +1,6 @@
 FROM bluelens/tensorflow:1.3.0-py3
 
 #ENV WEB_CONCURRENCY=4
-ENV OD_MODEL=/usr/src/app/model/frozen_inference_graph.pb
-ENV OD_LABELS=/usr/src/app/model/label_map.pbtxt
 ENV CLASSIFY_GRAPH=/usr/src/app/model/classify_image_graph_def.pb
 
 RUN mkdir -p /usr/src/app
