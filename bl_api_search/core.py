@@ -15,6 +15,7 @@ import time
 import uuid
 import argparse
 
+
 from flask import Flask, Response, request, render_template, redirect, jsonify as flask_jsonify, make_response, url_for
 from flask_common import Common
 from flask import send_from_directory
@@ -34,6 +35,7 @@ from .helpers import get_headers, status_code, get_dict, get_request_range, chec
 from .utils import weighted_choice, JSONEncoder
 from .structures import CaseInsensitiveDict
 from .db import query_by_id
+from .search import Search
 
 ENV_COOKIES = (
     '_gauges_unique',
@@ -88,10 +90,12 @@ if os.environ.get("BUGSNAG_API_KEY") is not None:
 
 
 UPLOAD_FOLDER = 'uploads'
-ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+
+search = Search()
 
 # -----------
 # Middlewares
@@ -110,23 +114,33 @@ def set_cors_headers(response):
             response.headers['Access-Control-Allow-Headers'] = request.headers['Access-Control-Request-Headers']
     return response
 
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
 
 # ------
 # Routes
 # ------
-
-@app.route('/', methods=['POST'])
+@app.route('/images', methods=['POST'])
 def search_image():
   if request.method == 'POST':
-      file = request.files['file']
-      if file and allowed_file(file.filename):
-          filename = secure_filename(file.filename)
-          file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-          return jsonify({'bok': 'ok'})
+    file = request.files['file']
+    search.search_imgage(file)
+    return jsonify({'bok': 'ok'})
+
+@app.route('/vectors', methods=['POST'])
+def search_vector():
+  if request.method == 'POST':
+    data = request.data
+    json_data = json.loads(data)
+    response = {}
+    response['code'] = 0
+    response['message'] = ""
+    dic = {}
+    dic['images'] = ''
+    response['data'] = dic
+    if json_data.vector is not None:
+      search.query(json_data.vector)
+
+    return jsonify(json_data)
 
 @app.route('/<image_id>', methods=['GET'])
 def query_id(image_id):

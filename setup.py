@@ -32,6 +32,8 @@ setup(
     install_requires=[
         'flask', 'MarkupSafe', 'decorator', 'itsdangerous', 'six', 'brotlipy',
         'raven[flask]', 'flask_limiter', 'Flask-Common',
-        'pymongo'
+        'pymongo', 'Pillow', 'numpy', 'boto3', 'tensorflow',
+      'stylelens-feature'
+
     ],
 )
