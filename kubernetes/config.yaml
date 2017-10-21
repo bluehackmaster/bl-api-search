@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: bl-api-objdetect
+  namespace: search
+  labels:
+    name: bl-api-objdetect
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+  selector:
+    name: bl-api-objdetect
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: bl-api-objdetect
+  namespace: search
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        role: api
+        name: bl-api-objdetect
+    spec:
+      containers:
+      - image: bluelens/bl-api-objdetect:latest
+        name: bl-api-objdetect
+        ports:
+        - containerPort: 8080
+          name: http-server
+        env:
+        - name: AWS_ACCESS_KEY
+          value: "AKIAIKUISDVO5VEI4TYQ"
+        - name: AWS_SECRET_ACCESS_KEY
+          value: "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"

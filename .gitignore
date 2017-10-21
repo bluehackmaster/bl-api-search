@@ -205,3 +205,8 @@ Session.vim
 # Auto-generated tag files
 tags
 
+kubernetes/config.yaml
+
+model/frozen_inference_graph.pb
+model/label_map.pbtxt
+model/classify_image_graph_def.pb

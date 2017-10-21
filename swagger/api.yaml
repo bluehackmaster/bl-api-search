@@ -1,0 +1,116 @@
+swagger: '2.0'
+info:
+  description: This is a API document for Image search on fashion items"
+  version: 0.0.1
+  title: stylelens-search
+  contact:
+    email: devops@bluehack.net
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+host: 'search.stylelens.io'
+basePath: /
+tags:
+  - name: search
+    description: search
+schemes:
+  - http
+paths:
+  /images:
+    post:
+      tags:
+      - "search"
+      summary: Query to search images
+      description: ''
+      operationId: searchImage
+      consumes:
+      - "multipart/form-data"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "file"
+        in: "formData"
+        description: "Image file to upload (only support jpg format yet)"
+        required: false
+        type: "file"
+      responses:
+        200:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/ImageSearchResponse'
+        400:
+          description: Invalid input
+securityDefinitions:
+  api_key:
+    type: apiKey
+    name: api_key
+    in: header
+definitions:
+  ImagesArray:
+    type: array
+    items:
+      $ref: '#definitions/Image'
+  Image:
+    type: object
+    properties:
+      name:
+        type: string
+      host_url:
+        type: string
+      host_code:
+        type: string
+      host_name:
+        type: string
+      tags:
+        type: array
+        items:
+          type: string
+      format:
+        type: string
+      product_name:
+        type: string
+      parent_image_raw:
+        type: string
+      parent_image_mobile:
+        type: string
+      parent_image_mobile_thumb:
+        type: string
+      image:
+        type: string
+        example: "s3://bluelens-style-object/n0100016/59e17359f8375c0e9fabb1c8.jpg"
+      class_code:
+        type: string
+        example: "n0100016"
+#      bucket:
+#        type: string
+#      storage:
+#        type: string
+      product_price:
+        type: string
+      currency_unit:
+        type: string
+      product_url:
+        type: string
+      product_no:
+        type: string
+      main:
+        type: integer
+      nation:
+        type: string
+  ImageSearchResponse:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+        description: "0: success, 1: fail"
+      message:
+        type: string
+      data:
+        type: object
+        properties:
+          images:
+            $ref: '#/definitions/ImagesArray'
+externalDocs:
+  description: Find out more about BlueLens
+  url: 'http://bluelens.io'
