@@ -124,7 +124,13 @@ def search_image():
   if request.method == 'POST':
     file = request.files['file']
     search.search_imgage(file)
-    return jsonify({'bok': 'ok'})
+    response = {}
+    response['code'] = 0
+    response['message'] = ""
+    dic = {}
+    dic['images'] = ''
+    response['data'] = dic
+    return jsonify(response)
 
 @app.route('/vectors', methods=['POST'])
 def search_vector():
