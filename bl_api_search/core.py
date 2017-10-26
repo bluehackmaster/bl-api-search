@@ -24,7 +24,6 @@ from werkzeug.datastructures import WWWAuthenticate, MultiDict
 from werkzeug.http import http_date
 from werkzeug.wrappers import BaseResponse
 from werkzeug.http import parse_authorization_header
-from werkzeug import secure_filename
 from raven.contrib.flask import Sentry
 from pprint import pprint
 
@@ -123,13 +122,15 @@ def set_cors_headers(response):
 def search_image():
   if request.method == 'POST':
     file = request.files['file']
-    search.search_imgage(file)
+    # search.search_imgage(file)
+    res_images = search.search_imgage(file)
     response = {}
     response['code'] = 0
     response['message'] = ""
     dic = {}
-    dic['images'] = ''
+    dic['images'] = res_images
     response['data'] = dic
+    # print(response)
     return jsonify(response)
 
 @app.route('/vectors', methods=['POST'])
@@ -140,12 +141,10 @@ def search_vector():
     response = {}
     response['code'] = 0
     response['message'] = ""
-    dic = {}
-    dic['images'] = ''
-    response['data'] = dic
     if json_data.vector is not None:
-      search.query(json_data.vector)
-
+      res_images = search.query(json_data.vector)
+    dic = {}
+    response['data'] = dic
     return jsonify(json_data)
 
 @app.route('/<image_id>', methods=['GET'])

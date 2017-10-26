@@ -7,10 +7,15 @@ import tensorflow as tf
 from PIL import Image
 import os
 import uuid
+import redis
 from os import listdir
 from os.path import isfile, join
 from util import label_map_util, s3
 from stylelens_feature import feature_extract
+import stylelens_search_vector
+from stylelens_search_vector.rest import ApiException
+from pprint import pprint
+
 
 IMG_NUM = 1408
 QUERY_IMG = 22
@@ -29,10 +34,16 @@ AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
 
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 
+REDIS_SERVER = os.environ['REDIS_SERVER']
+REDIS_KEY_IMAGE_INFO = 'image_info'
+REDIS_KEY_IMAGE_INDEX = 'image_index'
+rconn = redis.StrictRedis(REDIS_SERVER)
+
 class Search:
   def __init__(self):
     print('init')
     self.image_feature = feature_extract.ExtractFeature()
+    self.vector_search_client = stylelens_search_vector.SearchApi()
 
   def search_imgage(self, image_file):
     if image_file and self.allowed_file(image_file.filename):
@@ -40,11 +51,35 @@ class Search:
       im.show()
       size = 300, 300
       im.thumbnail(size, Image.ANTIALIAS)
-      im.show()
+      # im.show()
       file_name = str(uuid.uuid4()) + '.jpg'
       im.save(file_name)
-      self.extract_feature(file_name)
+      feature = self.extract_feature(file_name)
+      print(feature.dtype)
+      return self.query_feature(feature.tolist())
 
+  def query_feature(self, vector):
+    body = stylelens_search_vector.VectorSearchRequest() # VectorSearchRequest |
+    body.vector = vector
+
+    try:
+      # Query to search vector
+      api_response = self.vector_search_client.search_vector(body)
+      pprint(api_response)
+    except ApiException as e:
+      print("Exception when calling SearchApi->search_vector: %s\n" % e)
+
+    if api_response.data.vector is not None:
+      res_vector = api_response.data.vector
+      pprint(res_vector)
+
+    response_images = []
+    for idx in res_vector:
+      print(idx)
+      image_info = self.get_image_info(idx)
+      response_images.append(image_info)
+
+    return response_images
 
   def allowed_file(self, filename):
     return '.' in filename and \
@@ -52,5 +87,13 @@ class Search:
 
   def extract_feature(self, file):
     feature = self.image_feature.extract_feature(file)
-    print(feature)
+    # print(feature)
+    return feature
 
+  def get_image_info(self, index):
+    image_id = rconn.lindex(REDIS_KEY_IMAGE_INDEX, index)
+    data = rconn.hget(REDIS_KEY_IMAGE_INFO, image_id)
+    print(data)
+    image_info = json.loads(data.decode('utf-8'))
+    # print(image_info)
+    return image_info
