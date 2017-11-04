@@ -35,8 +35,8 @@ AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 
 REDIS_SERVER = os.environ['REDIS_SERVER']
-REDIS_KEY_IMAGE_INFO = 'image_info'
-REDIS_KEY_IMAGE_INDEX = 'image_index'
+REDIS_KEY_IMAGE_HASH = 'bl:image:hash'
+REDIS_KEY_IMAGE_LIST = 'bl:image:list'
 rconn = redis.StrictRedis(REDIS_SERVER)
 
 class Search:
@@ -91,8 +91,11 @@ class Search:
     return feature
 
   def get_image_info(self, index):
-    image_id = rconn.lindex(REDIS_KEY_IMAGE_INDEX, index)
-    data = rconn.hget(REDIS_KEY_IMAGE_INFO, image_id)
+    image_id = rconn.lindex(REDIS_KEY_IMAGE_LIST, index-1)
+    if type(image_id) is bytes:
+      image_id = image_id.decode('utf-8')
+
+    data = rconn.hget(REDIS_KEY_IMAGE_HASH, image_id)
     print(data)
     image_info = json.loads(data.decode('utf-8'))
     # print(image_info)

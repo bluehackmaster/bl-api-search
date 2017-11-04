@@ -1,7 +1,6 @@
-FROM bluelens/tensorflow:1.3.0-py3
+FROM bluelens/bl-api-search-base:latest
 
 #ENV WEB_CONCURRENCY=4
-ENV CLASSIFY_GRAPH=/usr/src/app/model/classify_image_graph_def.pb
 
 RUN mkdir -p /usr/src/app
 RUN mkdir -p /dataset/deepfashion
