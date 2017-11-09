@@ -50,6 +50,15 @@ class Search:
   def search_imgage(self, image_file):
     if image_file and self.allowed_file(image_file.filename):
       im = Image.open(image_file.stream)
+
+      file_type = image_file.filename.rsplit('.', 1)[1]
+      if 'jpg' == file_type or 'JPG' == file_type or 'jpeg' == file_type or 'JPEG' == file_type:
+        print('jpg')
+      else:
+        bg = Image.new("RGB", im.size, (255,255,255))
+        bg.paste(im, (0,0), im)
+        bg.save('file.jpg', quality=95)
+        im = bg
       im.show()
       size = 300, 300
       im.thumbnail(size, Image.ANTIALIAS)
