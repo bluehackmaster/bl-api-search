@@ -35,9 +35,11 @@ AWS_SECRET_ACCESS_KEY = os.environ['AWS_SECRET_ACCESS_KEY']
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
 
 REDIS_SERVER = os.environ['REDIS_SERVER']
+REDIS_PASSWORD = os.environ['REDIS_PASSWORD']
+
 REDIS_KEY_IMAGE_HASH = 'bl:image:hash'
 REDIS_KEY_IMAGE_LIST = 'bl:image:list'
-rconn = redis.StrictRedis(REDIS_SERVER)
+rconn = redis.StrictRedis(REDIS_SERVER, port=6379, password=REDIS_PASSWORD)
 
 class Search:
   def __init__(self):
